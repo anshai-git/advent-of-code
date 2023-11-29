@@ -21,19 +21,14 @@ fn main() -> io::Result<()> {
     for line in reader.lines().filter_map(|x| x.ok()) {
         match &line[..] {
             "" => {
-                // println!("Empty: {:?}", &line);
                 insert_total(&mut result, current);
                 current = 0;
             }
-            _ => {
-                // println!("Non Empty: {:?}", &line);
-                current += u32::from_str(&line).unwrap_or(0);
-            }
+            _ => current += u32::from_str(&line).unwrap_or(0)
         }
     }
 
     println!("{:?}", sum_result(result));
-
     Ok(())
 }
 
