@@ -29,8 +29,7 @@ void consume(char **buffer, char target) {
 }
 
 uint8_t parse_digit(char **buffer) {
-  if (**buffer == ' ')
-    advance(buffer);
+  if (**buffer == ' ') advance(buffer);
 
   uint8_t number = 0;
   while (isdigit(**buffer) && !is_ending_char(**buffer)) {
@@ -42,8 +41,7 @@ uint8_t parse_digit(char **buffer) {
 }
 
 char parse_color(char **buffer) {
-  if (**buffer == ' ')
-    advance(buffer);
+  if (**buffer == ' ') advance(buffer);
 
   if (isalpha(**buffer) && !is_ending_char(**buffer)) {
     return **buffer;
