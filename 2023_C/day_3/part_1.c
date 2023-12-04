@@ -7,17 +7,11 @@
 #include "args.h"
 #include "files.h"
 
-int max(int a, int b) {
-  return a > b ? a : b;
-}
+int max(int a, int b) { return a > b ? a : b; }
 
-int min(int a, int b) {
-  return a < b ? a : b;
-}
+int min(int a, int b) { return a < b ? a : b; }
 
-bool is_symbol(char c) {
-  return !isdigit(c) && c != '.' && c != '\n';
-}
+bool is_symbol(char c) { return !isdigit(c) && c != '.' && c != '\n'; }
 
 bool find_symbol(int rs, int re, int cs, int ce, char buffer[][1024]) {
   for (int i = rs; i <= re; i++) {
@@ -59,7 +53,7 @@ int main(int argc, char **argv) {
     uint64_t current_number = 0;
     while (++col_index < line_length - 1 || current_number != 0) {
       if (isdigit(current_char[col_index])) {
-        if (col_start == -1) col_start = max(0, col_index-1);
+        if (col_start == -1) col_start = max(0, col_index - 1);
         col_end = min(line_length - 1, col_index + 1);
         current_number = current_number * 10 + (current_char[col_index] - '0');
       } else {
