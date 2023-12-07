@@ -31,21 +31,26 @@ impl HAND {
             *count += 1;
         }
 
-        // Need to sort (in decreasing order?) the hashmap by the values in order for the following matching to work properly
-        for (c, count) in &count_by_char {
-            match count {
-                5 => { return HAND::FIVE_OF_A_KIND { data: HandData { cards: from, bid } } },
-                4 => { return HAND::FOUR_OF_A_KIND { data: HandData { cards: from, bid } } },
-                3 => { 
-                    if count_by_char.values().any(|&v| v == 2) {
-
-                    }
-                },
-                2 => { return HAND::FOUR_OF_A_KIND { data: HandData { cards: from, bid } } },
+        let hand_data: HandData = HandData { cards: from, bid };
+        let max_count: &u8 = count_by_char.values().max().unwrap();
+        return match *max_count {
+            5 => HAND::FIVE_OF_A_KIND { data: hand_data },
+            4 => HAND::FOUR_OF_A_KIND { data: hand_data },
+            3 => if count_by_char.len() == 2 {
+                    HAND::FULL_HOUSE { data: hand_data }
+                } else {
+                    HAND::THREE_OF_A_KIND { data: hand_data }
+                }
+            2 => {
+                if count_by_char.len() == 3 {
+                    HAND::TWO_PAIR { data: hand_data }
+                } else {
+                    HAND::ONE_PAIR { data: hand_data }
+                }
             }
-        }
+            _ => HAND::HIGH_CARD { data: hand_data }
+        };
 
-        HAND::TWO_PAIR { data: () }
     }
 
     fn strength(&self) -> u8 {
@@ -89,12 +94,15 @@ fn main() {
 
         let cards: String = line_str.split(' ').nth(0).unwrap().to_string();
         let bid: u32 = line_str.split(' ').nth(1).unwrap().parse::<u32>().unwrap();
-
-        // let hand: HAND =
-        // hands.push(hand);
+        
+        let hand: HAND = HAND::new(cards, bid);
+        hands.push(hand);
     }
 
-    println!("{:?}", hands);
+    for hand in hands {
+        println!("{:?}", hand);
+    }
+
 }
 
 fn print_usage(program: String) -> () {
