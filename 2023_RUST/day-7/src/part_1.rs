@@ -17,7 +17,9 @@ enum Card {
     CARD_8,
     CARD_7,
     CARD_6,
-    CARD_5, CARD_4, CARD_3,
+    CARD_5,
+    CARD_4,
+    CARD_3,
     CARD_2,
 }
 
@@ -45,16 +47,16 @@ impl Card {
             Card::CARD_A => 13,
             Card::CARD_K => 12,
             Card::CARD_Q => 11,
-            Card::CARD_T => 10,
-            Card::CARD_9 => 9,
-            Card::CARD_8 => 8,
-            Card::CARD_7 => 7,
-            Card::CARD_6 => 6,
-            Card::CARD_5 => 5,
-            Card::CARD_4 => 4,
-            Card::CARD_3 => 3,
-            Card::CARD_2 => 2,
-            Card::CARD_J => 1,
+            Card::CARD_J => 10,
+            Card::CARD_T => 9,
+            Card::CARD_9 => 8,
+            Card::CARD_8 => 7,
+            Card::CARD_7 => 6,
+            Card::CARD_6 => 5,
+            Card::CARD_5 => 4,
+            Card::CARD_4 => 3,
+            Card::CARD_3 => 2,
+            Card::CARD_2 => 1,
         }
     }
 }
@@ -103,28 +105,8 @@ impl HAND {
             *count += 1;
         }
 
-        let mut pairs: Vec<(&Card, &u8)> = count_by_card.iter().map(|e| (e.0, e.1)).collect();
-        pairs.sort_by(|a, b| {
-            a.1.cmp(b.1)
-                .then_with(|| a.0.strength().cmp(&b.0.strength()))
-        });
-
-        if pairs.get(0).unwrap() == &(&Card::CARD_J, &(5 as u8)) {
-            return HAND::FIVE_OF_A_KIND { data: HandData { cards, bid } }
-        }
-
-        let max_card: &Card = pairs.get(0).unwrap().0;
-
-
-        let copy: Vec<&Card> = cards.iter().map(|c| if c == &Card::CARD_J { max_card } else {c}).collect();
-        let mut count_by_card_c: HashMap<Card, u8> = HashMap::new();
-        for card in copy {
-            let count = count_by_card_c.entry(card.clone()).or_insert(0);
-            *count += 1;
-        }
-
-        let max_count: &u8 = count_by_card_c.values().max().unwrap();
         let data: HandData = HandData { cards, bid };
+        let max_count: &u8 = count_by_card.values().max().unwrap();
 
         return match *max_count {
             5 => HAND::FIVE_OF_A_KIND { data },
@@ -234,14 +216,7 @@ fn main() {
     for line in reader.lines() {
         let line_str: String = line.unwrap().to_string();
 
-        let cards: Vec<Card> = line_str
-            .split(' ')
-            .nth(0)
-            .unwrap()
-            .to_string()
-            .chars()
-            .map(Card::new)
-            .collect();
+        let cards: Vec<Card> = line_str.split(' ').nth(0).unwrap().to_string().chars().map(Card::new).collect();
         let bid: u32 = line_str.split(' ').nth(1).unwrap().parse::<u32>().unwrap();
 
         let hand: HAND = HAND::new(cards, bid);

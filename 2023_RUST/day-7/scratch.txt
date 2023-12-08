@@ -1,0 +1,8 @@
+<part 1>
+248165059 :: too high
+248113761 :: correct
+247941483 :: too low
+
+<part 2>
+246360542 :: too high
+246285222 :: correct
