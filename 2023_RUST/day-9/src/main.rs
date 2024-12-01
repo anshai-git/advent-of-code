@@ -19,7 +19,7 @@ fn main() {
             .map(|e| e.parse::<i32>())
             .flatten()
             .collect();
-    
+
         let mut current_history: Vec<Vec<i32>> = Vec::new();
         current_history.push(history.clone());
 
@@ -27,14 +27,14 @@ fn main() {
         while current.iter().any(|e| e != &0) {
             let mut new_vec = Vec::new();
             for (i, e) in current.iter().enumerate().skip(1) {
-                new_vec.push(e.sub(current.get(i-1).unwrap()) ) 
+                new_vec.push(e.sub(current.get(i-1).unwrap()) )
             }
             current = new_vec;
             current_history.push(current.clone());
         }
 
         let mut current_value: i32 = 0;
-        
+
         for h in current_history.clone().into_iter().rev() {
             current_value = h.first().unwrap() - current_value;
         }
