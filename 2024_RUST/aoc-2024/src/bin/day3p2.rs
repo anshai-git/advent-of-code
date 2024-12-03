@@ -3,6 +3,8 @@ use std::{collections::HashMap, env::args, fs, process::exit};
 #[derive(Debug, Clone, PartialEq)]
 pub enum Token {
     Mul,
+    Do,
+    Dont,
     Number(u64),
     LeftParen,
     RightParen,
@@ -19,10 +21,18 @@ pub struct Lexer {
     current: u64,
 }
 
+pub enum Statement {
+    Expr(u64, u64),
+    Do,
+    Dont
+}
+
 impl Lexer {
     pub fn new(source: String) -> Self {
         let mut keywords = HashMap::new();
         keywords.insert("mul".to_string(), Token::Mul);
+        keywords.insert("do".to_string(), Token::Do);
+        keywords.insert("don't".to_string(), Token::Dont);
 
         Self {
             source,
@@ -49,7 +59,7 @@ impl Lexer {
             '(' => self.tokens.push(Token::LeftParen),
             ')' => self.tokens.push(Token::RightParen),
             ',' => self.tokens.push(Token::Comma),
-            'm' => self.keyword(),
+            'm' | 'd' => self.keyword(),
             _ => {
                 if self.is_digit(c) {
                     self.number();
@@ -68,12 +78,12 @@ impl Lexer {
         }
 
         let text: String = self.source[self.start as usize..self.current as usize].to_string();
-        let token = if text == "mul" || text.ends_with("mul") { Token::Mul } else { Token::Other };
-        self.tokens.push(token);
+        let token = self.keywords.get(&text).or(Some(&Token::Other));
+        self.tokens.push(token.unwrap().clone());
     }
 
     fn is_alpha(&mut self, c: char) -> bool {
-        (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
+        (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '\''
     }
 
     fn number(&mut self) {
@@ -120,57 +130,75 @@ impl Parser {
         Self { tokens, current: 0 }
     }
 
-    fn parse(&mut self) -> Vec<(u64, u64)> {
-        let mut exprs: Vec<(u64, u64)> = Vec::new();
+    fn parse(&mut self) -> Vec<Statement> {
+        let mut stmts: Vec<Statement> = Vec::new();
 
         while !self.is_at_end() {
-            if !matches!(self.next_token(), Token::Mul) {
-                continue;
-            }
+            match self.tokens.get(self.current as usize).unwrap() {
+                Token::Mul => {
+                    if !matches!(self.next_token(), Token::Mul) {
+                        continue;
+                    }
 
-            if let Token::Mul = self.tokens.get(self.current as usize).unwrap() {
-                continue;
-            }
+                    if let Token::Mul = self.tokens.get(self.current as usize).unwrap() {
+                        continue;
+                    }
 
-            if !matches!(self.next_token(), Token::LeftParen) {
-                continue;
-            }
+                    if !matches!(self.next_token(), Token::LeftParen) {
+                        continue;
+                    }
 
-            let left = match self.next_token() {
-                Token::Number(val) => val,
-                _ => {
-                    continue;
+                    let left = match self.next_token() {
+                        Token::Number(val) => val,
+                        _ => {
+                            continue;
+                        }
+                    };
+
+                    if let Token::Mul = self.tokens.get(self.current as usize).unwrap() {
+                        continue;
+                    }
+
+                    if !matches!(self.next_token(), Token::Comma) {
+                        continue;
+                    }
+
+                    let right = match self.next_token() {
+                        Token::Number(right) => right,
+                        _ => {
+                            continue;
+                        }
+                    };
+
+                    if let Token::Mul = self.tokens.get(self.current as usize).unwrap() {
+                        continue;
+                    }
+
+                    if !matches!(self.next_token(), Token::RightParen) {
+                        continue;
+                    }
+
+                    stmts.push(Statement::Expr(left, right));
                 }
-            };
-
-            if let Token::Mul = self.tokens.get(self.current as usize).unwrap() {
-                continue;
-            }
-
-            if !matches!(self.next_token(), Token::Comma) {
-                continue;
-            }
-
-            let right = match self.next_token() {
-                Token::Number(right) => right,
-                _ => {
-                    continue;
+                Token::Do => {
+                    stmts.push(Statement::Do);
+                    self.current += 1;
                 }
-            };
-
-            if let Token::Mul = self.tokens.get(self.current as usize).unwrap() {
-                continue;
+                Token::Dont => {
+                    stmts.push(Statement::Dont);
+                    self.current += 1;
+                }
+                _ => {
+                    self.current += 1;
+                }
             }
-
-            if !matches!(self.next_token(), Token::RightParen) {
-                continue;
-            }
-
-            println!("mul ({:?}, {:?})", left, right);
-            exprs.push((left, right));
         }
 
-        exprs
+        stmts
+    }
+
+    fn parse_mul(&mut self) {
+
     }
 
     fn next_token(&mut self) -> Token {
@@ -211,14 +239,27 @@ fn main() {
     println!("{:?}", tokens);
 
     let mut parser: Parser = Parser::new(tokens.clone());
-    let mul_exprs: Vec<(u64, u64)> = parser.parse();
+    let stmts: Vec<Statement> = parser.parse();
 
     let mut result: u64 = 0;
-    for expr in &mul_exprs {
-        result += expr.0 * expr.1;
+    let mut is_on: bool = true;
+    for stmt in &stmts {
+        match stmt {
+            Statement::Expr(left, right) => {
+                if is_on {
+                    result += left * right;
+                }
+            }
+            Statement::Do => {
+                is_on = true;
+            }
+            Statement::Dont => {
+                is_on = false;
+            }
+        }
     }
 
-    println!("{:?} expressions", mul_exprs.len());
+    println!("{:?} expressions", stmts.len());
     println!(">> {}", result);
 
 }
