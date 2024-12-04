@@ -197,10 +197,6 @@ impl Parser {
         stmts
     }
 
-    fn parse_mul(&mut self) {
-
-    }
-
     fn next_token(&mut self) -> Token {
         self.advance();
         self.tokens.get((self.current - 1) as usize).unwrap().clone()
