@@ -58,7 +58,7 @@ fn main() {
             while let Some(invalid_value) = update[0..current_position].iter().find(|e| {
                 rule_map
                     .get(&update[current_position])
-                    .unwrap_or(&mut Vec::new())
+                    .unwrap_or(&Vec::new())
                     .clone()
                     .contains(e)
             }) {
