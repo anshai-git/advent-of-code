@@ -54,17 +54,17 @@ fn main() {
 
         let mut is_valid: bool = true;
 
-        for current_pos in 0..update.len() {
-            while let Some(invalid_value) = update[0..current_pos].iter().find(|e| {
+        for current_position in 0..update.len() {
+            while let Some(invalid_value) = update[0..current_position].iter().find(|e| {
                 rule_map
-                    .get_mut(&update[current_pos])
+                    .get(&update[current_position])
                     .unwrap_or(&mut Vec::new())
                     .clone()
                     .contains(e)
             }) {
                 is_valid = false;
                 let invalid_position_left = update.iter().position(|e| e == invalid_value).unwrap();
-                update.swap(invalid_position_left, current_pos);
+                update.swap(invalid_position_left, current_position);
             }
         }
 
