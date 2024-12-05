@@ -44,8 +44,6 @@ let () =
   let (l, r) = part_2 lines in *)
 
 
-
-
 let nums = [1; 2; 3; 4; 5; 6; 7]
 
 (* List Length *)
@@ -73,6 +71,12 @@ let rec fib n =
   | 2 -> 1
   | n -> fib (n - 1) + fib (n - 2)
 
+(* Reverse a string *)
+let rec string_reverse str =
+  match str with
+  | "" -> ""
+  | _  -> string_reverse (String.sub str 1 (String.length str - 1)) ^ String.sub str 0 1
+
 let first_fib = fib 1
 let () = Printf.printf "First Fib: %d\n" first_fib
 
@@ -93,3 +97,8 @@ let () = Printf.printf "List Sum: %d\n" sum
 
 let even_nums_count = count_even nums
 let () = Printf.printf "Even numbers count: %d\n" even_nums_count
+
+let () =
+  let some_text = "stressed" in
+  let reversed = string_reverse some_text in
+  Printf.printf "Reversed: %s\n" reversed
