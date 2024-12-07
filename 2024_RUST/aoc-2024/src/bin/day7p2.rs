@@ -1,5 +1,5 @@
 use std::{
-    collections::{HashMap, HashSet},
+    collections::HashMap,
     io::{BufRead, BufReader},
     process::exit,
 };
@@ -37,14 +37,12 @@ fn main() {
 
     let mut result: usize = 0;
     let mut cal_index = 0;
+    let mut operator_permutations_by_length: HashMap<usize, Vec<Vec<Operator>>> = HashMap::new();
     for (k, v) in &calibrations {
-        let mut operators: Vec<Vec<Operator>> = generate_operator_lists(
-            vec![Operator::Add, Operator::Mul, Operator::Cat],
-            v.len() - 1,
-        );
-        // for o in &operators {
-        //     println!("{:?}", o);
-        // }
+        let operator_count = v.len() - 1;
+        let mut operators = operator_permutations_by_length.entry(operator_count)
+            .or_insert_with(|| generate_operator_lists(vec![Operator::Add, Operator::Mul, Operator::Cat], operator_count))
+            .clone();
 
         let operators_len = operators.len();
         for (index, o) in operators.iter_mut().enumerate() {
