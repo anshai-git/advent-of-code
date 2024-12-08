@@ -95,8 +95,8 @@ fn main() {
                     pair.1.col + (pair.1.col - pair.0.col)
                 };
 
-
-                // let mut antinode_row: isize = 0;
+                antinode_antennas.insert((pair.0.row, pair.0.col));
+                antinode_antennas.insert((pair.1.row, pair.1.col));
 
                 if antinode_row < 0 || antinode_col < 0 || antinode_row > height || antinode_col > width {
                     println!("invalid");
@@ -110,9 +110,6 @@ fn main() {
                     );
 
                     antinodes.insert(antinode);
-
-                    antinode_antennas.insert((pair.0.row, pair.0.col));
-                    antinode_antennas.insert((pair.1.row, pair.1.col));
                 }
 
                 while let Some(antinode) = step(
@@ -192,4 +189,5 @@ fn step(
 /*
     1313 :: too low
     1324 :: not right
+    1333 :: correct
 */
