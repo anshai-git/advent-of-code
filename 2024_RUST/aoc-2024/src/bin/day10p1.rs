@@ -60,9 +60,7 @@ fn traverse_map(map: &Vec<Vec<Option<u32>>>, trailhead: &(isize, isize)) -> isiz
             return;
         }
 
-        if visited.contains(&current_position) {
-            return;
-        }
+        if visited.contains(&current_position) { return; }
         visited.insert(current_position);
 
         step(map, (current_position.0 + 1, current_position.1), current_position, end_positions, visited, first_step); // Down

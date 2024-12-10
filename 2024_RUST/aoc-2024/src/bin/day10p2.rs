@@ -38,100 +38,43 @@ fn main() {
 }
 
 fn traverse_map(map: &Vec<Vec<Option<u32>>>, trailhead: &(isize, isize)) -> isize {
-    let mut end_positions: Vec<(isize, isize)> = Vec::new();
+    let mut end_positions: HashSet<(isize, isize)> = HashSet::new();
     let mut visited: HashSet<(isize, isize)> = HashSet::new();
-    let mut first_step: bool = true;
-
     fn step(
         map: &Vec<Vec<Option<u32>>>,
         current_position: (isize, isize),
-        previous_position: (isize, isize),
-        end_positions: &mut Vec<(isize, isize)>,
+        prev: Option<u32>,
+        end_positions: &mut HashSet<(isize, isize)>,
         visited: &mut HashSet<(isize, isize)>,
-        first_step: &mut bool,
     ) {
-        // println!("{:?}", current_position);
         if current_position.0 < 0
             || current_position.1 < 0
             || current_position.0 >= map.len() as isize
             || current_position.1 >= map[0].len() as isize
-        {
-            return;
-        }
+        { return; }
 
-        print_map_with_pos(map, current_position);
-
-        if !*first_step {
-            if let (Some(a), Some(b)) = (
-                map[current_position.0 as usize][current_position.1 as usize],
-                map[previous_position.0 as usize][previous_position.1 as usize],
-            ) {
-                if a < b || a.abs_diff(b) != 1 {
+        if let Some(current) =  map[current_position.0 as usize][current_position.1 as usize] {
+            if let Some(prev_value) = prev {
+                if current < prev_value || current.abs_diff(prev_value) != 1 {
                     return;
                 }
             }
-        } else {
-            *first_step = false;
-        }
-
-        if let Some(n) = map[current_position.0 as usize][current_position.1 as usize] {
-            if n == 9 {
-                end_positions.push(current_position);
+            if current == 9 {
+                end_positions.insert(current_position);
                 return;
             }
-        } else {
-            return;
+            visited.insert(current_position);
+            for &(dx, dy) in &[(1, 0), (0, -1), (-1, 0), (0, 1)] {
+                step(map, (current_position.0 + dx, current_position.1 + dy), Some(current), end_positions, visited);
+            }
         }
-
-        visited.insert(current_position);
-
-        step(
-            map,
-            (current_position.0 + 1, current_position.1),
-            current_position,
-            end_positions,
-            visited,
-            first_step,
-        ); // Down
-        step(
-            map,
-            (current_position.0, current_position.1 - 1),
-            current_position,
-            end_positions,
-            visited,
-            first_step,
-        ); // Left
-        step(
-            map,
-            (current_position.0 - 1, current_position.1),
-            current_position,
-            end_positions,
-            visited,
-            first_step,
-        ); // Up
-        step(
-            map,
-            (current_position.0, current_position.1 + 1),
-            current_position,
-            end_positions,
-            visited,
-            first_step,
-        ); // Right
 
         if visited.contains(&current_position) {
             return;
         }
     }
 
-    step(
-        map,
-        *trailhead,
-        *trailhead,
-        &mut end_positions,
-        &mut visited,
-        &mut first_step,
-    );
-
+    step(map, *trailhead, None, &mut end_positions, &mut visited);
     end_positions.len() as isize
 }
 
@@ -154,24 +97,6 @@ fn print_map(map: &Vec<Vec<Option<u32>>>) {
         for col in row {
             if let Some(n) = col {
                 print!("{}", n);
-            } else {
-                print!(".");
-            }
-        }
-        println!("");
-    }
-}
-
-fn print_map_with_pos(map: &Vec<Vec<Option<u32>>>, current_pos: (isize, isize)) {
-    println!("-----------------");
-    for (ri, row) in map.iter().enumerate() {
-        for (ci, col) in row.iter().enumerate() {
-            if let Some(n) = col {
-                if ri == current_pos.0 as usize && ci == current_pos.1 as usize {
-                    print!("x");
-                } else {
-                    print!("{}", n);
-                }
             } else {
                 print!(".");
             }
