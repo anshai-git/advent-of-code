@@ -38,13 +38,13 @@ fn main() {
 }
 
 fn traverse_map(map: &Vec<Vec<Option<u32>>>, trailhead: &(isize, isize)) -> isize {
-    let mut end_positions: HashSet<(isize, isize)> = HashSet::new();
+    let mut end_positions: Vec<(isize, isize)> = Vec::new();
     let mut visited: HashSet<(isize, isize)> = HashSet::new();
     fn step(
         map: &Vec<Vec<Option<u32>>>,
         current_position: (isize, isize),
         prev: Option<u32>,
-        end_positions: &mut HashSet<(isize, isize)>,
+        end_positions: &mut Vec<(isize, isize)>,
         visited: &mut HashSet<(isize, isize)>,
     ) {
         if current_position.0 < 0
@@ -60,7 +60,7 @@ fn traverse_map(map: &Vec<Vec<Option<u32>>>, trailhead: &(isize, isize)) -> isiz
                 }
             }
             if current == 9 {
-                end_positions.insert(current_position);
+                end_positions.push(current_position);
                 return;
             }
             visited.insert(current_position);
