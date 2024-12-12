@@ -52,11 +52,11 @@ fn main() {
     for (row_index, row) in map.clone().iter().enumerate() {
         for (col_index, col) in row.iter().enumerate() {
             if pairs.iter().any(|(_, area)| area.iter().any(|a| *a == (row_index, col_index))) {
-                println!("Already scanned: {} :: {}", row_index, col_index);
+                // println!("Already scanned: {} :: {}", row_index, col_index);
             } else {
-                let c = map[row_index][col_index];
-                println!("Not Scanned YET: {} :: {} :: {}", row_index, col_index, c);
-                let (fence_map, area) = process_area(&map, row_index, col_index, c);
+                // let c = map[row_index][col_index];
+                // println!("Not Scanned YET: {} :: {} :: {}", row_index, col_index, c);
+                let (fence_map, area) = process_area(&map, row_index, col_index, *col);
                 pairs.push((fence_map, area));
             }
         }
@@ -66,17 +66,17 @@ fn main() {
     let mut sum = 0;
     for (fence_map, area) in pairs {
         let val = fence_map.len() * area.len();
-        println!("{} :: {} * {} = {}", fence_map.iter().nth(0).unwrap().2, fence_map.len(), area.len(), val);
+        // println!("{} :: {} * {} = {}", fence_map.iter().nth(0).unwrap().2, fence_map.len(), area.len(), val);
         sum += val;
-        println!("Fence Map:");
-        for item in fence_map {
-            println!("{:?}", item);
-        }
+        // println!("Fence Map:");
+        // for item in fence_map {
+        //     println!("{:?}", item);
+        // }
 
-        println!("Area Map:");
-        for a in area.iter() {
-            println!("{:?}", a);
-        }
+        // println!("Area Map:");
+        // for a in area.iter() {
+        //     println!("{:?}", a);
+        // }
     }
     println!("\nSUM: {}\n", sum);
 }
@@ -96,7 +96,7 @@ fn process_area(map: &Vec<Vec<char>>, row_index: usize, col_index: usize, c: cha
         area: &mut HashSet<(usize, usize)>,
         c: char
     ) {
-        print_map_with_pos(map, position);
+        // print_map_with_pos(map, position);
         if position.x < 0
             || position.y < 0
             || position.y as usize >= map.len()
@@ -105,7 +105,7 @@ fn process_area(map: &Vec<Vec<char>>, row_index: usize, col_index: usize, c: cha
             if let Some(prev) = previous_pos {
                 let prev_char: char = map[prev.y as usize][prev.x as usize];
                 let plot_field = (prev.y as usize, prev.x as usize, prev_char, position.d);
-                println!("bounds limit {:?}", plot_field);
+                // println!("bounds limit {:?}", plot_field);
                 fence_map.insert(plot_field);
                 // pause();
             }
@@ -122,7 +122,7 @@ fn process_area(map: &Vec<Vec<char>>, row_index: usize, col_index: usize, c: cha
 
             if current_char != previous_char {
                 let plot_field = (prev.y as usize, prev.x as usize, previous_char, position.d);
-                println!("char diff {:?}", plot_field);
+                // println!("char diff {:?}", plot_field);
                 fence_map.insert(plot_field);
                 // pause();
                 return;
