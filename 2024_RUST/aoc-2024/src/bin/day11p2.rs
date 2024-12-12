@@ -26,26 +26,29 @@ fn main() {
     for _ in 0..75 {
         let mut new_stones: BTreeMap<u64, u64> = BTreeMap::new();
         for (stone, count) in &stones {
-            if *stone == 0 {
-                new_stones
-                    .entry(1)
-                    .and_modify(|e| *e += *count)
-                    .or_insert(*count);
-            } else if has_even_number_of_digits(stone) {
-                let mid = stone.to_string().chars().count() / 2;
-                let stone_string = stone.to_string();
-                let (first, second) = stone_string.split_at(mid);
-                new_stones
-                    .entry(first.parse::<u64>().unwrap())
-                    .and_modify(|e| *e += *count)
-                    .or_insert(*count);
-                new_stones
-                    .entry(second.parse::<u64>().unwrap())
-                    .and_modify(|e| *e += *count)
-                    .or_insert(*count);
-            } else {
-                new_stones.insert(2024 * (*stone), *count);
-            }
+            match *stone {
+                0 => {
+                    new_stones
+                        .entry(1)
+                        .and_modify(|e| *e += *count)
+                        .or_insert(*count);
+                }
+                _ if let Some(stone_string) = has_even_number_of_digits(stone) => {
+                    let mid = s.chars().count() / 2;
+                    let (first, second) = stone_string.split_at(mid);
+                    new_stones
+                        .entry(first.parse::<u64>().unwrap())
+                        .and_modify(|e| *e += *count)
+                        .or_insert(*count);
+                    new_stones
+                        .entry(second.parse::<u64>().unwrap())
+                        .and_modify(|e| *e += *count)
+                        .or_insert(*count);
+                }
+                _ => {
+                    new_stones.insert(2024 * (*stone), *count);
+                }
+            };
         }
         stones = new_stones;
     }
@@ -54,8 +57,9 @@ fn main() {
     println!("Stones: {}", sum);
 }
 
-fn has_even_number_of_digits(n: &u64) -> bool {
-    n.to_string().chars().count() % 2 == 0
+fn has_even_number_of_digits(n: &u64) -> Option<String> {
+    let stone_string = n.to_string();
+    if stone_string.chars().count() % 2 == 0 { Some(stone_string) } else { None }
 }
 
 /*

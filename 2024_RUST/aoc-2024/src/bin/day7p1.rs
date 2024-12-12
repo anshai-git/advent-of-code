@@ -38,7 +38,7 @@ fn main() {
     for (k, v) in calibrations {
         let mut operators: Vec<Vec<Operator>> = generate_operator_lists(vec![Operator::Add, Operator::Mul], v.len() - 1);
         for o in &operators {
-            println!("{:?}", o);
+            // println!("{:?}", o);
         }
 
         for o in operators.iter_mut() {
@@ -58,11 +58,11 @@ fn main() {
                 result +=  sum;
                 break;
             }
-            println!("{} :: {:?} :: {}", k, v, sum);
+            // println!("{} :: {:?} :: {}", k, v, sum);
         }
     }
 
-    println!("\nResult: {}\n", result);
+    // println!("\nResult: {}\n", result);
 
 }
 
@@ -72,6 +72,7 @@ fn generate_operator_lists(operators: Vec<Operator>, positions: usize) -> Vec<Ve
     fn backtrack(current: &mut Vec<Operator>, positions: usize, operators: &Vec<Operator>, result: &mut Vec<Vec<Operator>>) {
         if current.len() == positions {
             result.push(current.clone());
+            println!("CURRENT: {:?}", current);
             return;
         }
 
