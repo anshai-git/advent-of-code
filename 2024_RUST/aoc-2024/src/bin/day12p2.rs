@@ -1,5 +1,5 @@
 use std::{
-    collections::HashSet,
+    collections::{HashMap, HashSet},
     fs::File,
     io::{BufRead, BufReader},
 };
@@ -70,18 +70,20 @@ fn main() {
     let mut sum = 0;
     for (fence_map, area) in pairs {
         let mut sides = 0;
-        if area.len() == 1 {
-            sides = 4;
-        } else {
-            for win in fence_map.windows(2) {
-                if let [a, b] = win {
-                    if a.3 != b.3 {
-                        sides += 1;
-                    }
-                }
-            }
-        }
 
+        let down_sides = shrink_h_fences(&fence_map, Direction::Down);
+        println!("Down Sides: {}", down_sides);
+        let up_sides = shrink_h_fences(&fence_map, Direction::Up);
+        println!("Up Sides: {}", up_sides);
+        let left_sides = shrink_v_fences(&fence_map, Direction::Left);
+        println!("Left Sides: {}", left_sides);
+        let right_sides = shrink_v_fences(&fence_map, Direction::Right);
+        println!("right Sides: {}", right_sides);
+
+        sides += down_sides;
+        sides += up_sides;
+        sides += left_sides;
+        sides += right_sides;
         let val = sides * area.len();
 
         println!(
@@ -104,6 +106,66 @@ fn main() {
         }
     }
     println!("\nSUM: {}\n", sum);
+}
+
+fn shrink_h_fences(fences: &Vec<(usize, usize, char, Direction)>, direction: Direction) -> usize {
+    let mut grouped: HashMap<usize, Vec<Vec<(usize, usize, char, Direction)>>> = HashMap::new();
+
+    let mut groups_by_row: HashMap<usize, Vec<(usize, usize, char, Direction)>> = HashMap::new();
+    for item in fences.iter().filter(|it| it.3 == direction) {
+        groups_by_row.entry(item.0).or_default().push(*item);
+    }
+
+    for (key, mut group) in groups_by_row {
+        group.sort_by(|a, b| a.1.cmp(&b.1));
+
+        let mut subgroups = Vec::new();
+        let mut current_subgroup = vec![group[0].clone()];
+
+        for i in 1..group.len() {
+            if group[i].1 - group[i - 1].1 == 1 {
+                current_subgroup.push(group[i].clone());
+            } else {
+                subgroups.push(current_subgroup);
+                current_subgroup = vec![group[i].clone()];
+            }
+        }
+        subgroups.push(current_subgroup);
+        grouped.insert(key, subgroups);
+    }
+
+    println!("{:?}", grouped);
+
+    grouped.iter().map(|it| it.1.len()).sum()
+}
+
+fn shrink_v_fences(fences: &Vec<(usize, usize, char, Direction)>, direction: Direction) -> usize {
+    let mut grouped: HashMap<usize, Vec<Vec<(usize, usize, char, Direction)>>> = HashMap::new();
+
+    let mut groups_by_col: HashMap<usize, Vec<(usize, usize, char, Direction)>> = HashMap::new();
+    for item in fences.iter().filter(|it| it.3 == direction) {
+        groups_by_col.entry(item.1).or_default().push(*item);
+    }
+
+    for (key, mut group) in groups_by_col {
+        group.sort_by(|a, b| a.0.cmp(&b.0));
+
+        let mut subgroups = Vec::new();
+        let mut current_subgroup = vec![group[0].clone()];
+
+        for i in 1..group.len() {
+            if group[i].0 - group[i - 1].0 == 1 {
+                current_subgroup.push(group[i].clone());
+            } else {
+                subgroups.push(current_subgroup);
+                current_subgroup = vec![group[i].clone()];
+            }
+        }
+        subgroups.push(current_subgroup);
+        grouped.insert(key, subgroups);
+    }
+
+    grouped.iter().map(|it| it.1.len()).sum()
 }
 
 fn process_area(
@@ -166,53 +228,13 @@ fn process_area(
             return;
         }
         visited.insert((position.y as usize, position.x as usize));
-        step(
-            map,
-            position.go(Direction::Down),
-            Some(position),
-            visited,
-            fence_map,
-            area,
-            c,
-        );
-        step(
-            map,
-            position.go(Direction::Right),
-            Some(position),
-            visited,
-            fence_map,
-            area,
-            c,
-        );
-        step(
-            map,
-            position.go(Direction::Left),
-            Some(position),
-            visited,
-            fence_map,
-            area,
-            c,
-        );
-        step(
-            map,
-            position.go(Direction::Up),
-            Some(position),
-            visited,
-            fence_map,
-            area,
-            c,
-        );
+        step(map, position.go(Direction::Down), Some(position), visited, fence_map, area, c);
+        step(map, position.go(Direction::Right), Some(position), visited, fence_map, area, c);
+        step(map, position.go(Direction::Left), Some(position), visited, fence_map, area, c);
+        step(map, position.go(Direction::Up), Some(position), visited, fence_map, area, c);
     }
 
-    step(
-        map,
-        start_pos,
-        None,
-        &mut visited,
-        &mut fence_map,
-        &mut area,
-        c,
-    );
+    step(map, start_pos, None, &mut visited, &mut fence_map, &mut area, c);
 
     (fence_map, area)
 }
