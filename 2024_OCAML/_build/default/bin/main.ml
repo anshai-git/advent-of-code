@@ -61,27 +61,3 @@ let () =
   let reversed = string_reverse some_text in
   Printf.printf "Reversed: %s\n" reversed
 (* << Reverse a string *)
-
-(* >> Day 1 Part 1*)
-let read_file_lines filename =
-  let channel = open_in filename in
-  let rec read_lines acc =
-    try
-      let line = input_line channel in
-      read_lines (line :: acc)
-    with End_of_file ->
-      close_in channel;
-      List.rev acc
-  in
-  read_lines []
-
-let rec print_lines lines =
-  match lines with
-  | head :: rest -> Printf.printf "%s" head;
-    print_lines rest
-  | [] -> ()
-
-let () =
-  let lines = read_file_lines "example.txt" in
-  print_lines lines
-(* << Day 1 Part 1*)

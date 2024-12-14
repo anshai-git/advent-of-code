@@ -5,7 +5,7 @@ use std::{
 };
 
 use aoc_2024::lib::util::{open_file, parse_filename};
-use image::{Rgb, RgbImage};
+use image::RgbImage;
 
 const max_x: isize = 101;
 const max_y: isize = 103;
@@ -54,62 +54,26 @@ fn main() {
         })
         .collect::<Vec<Robot>>();
 
-    for _ in 0..100 {
+    let mut highest_frequency = (0, 0);
+    for iteration in 1..10001 {
         for robot in robots.iter_mut() {
             robot.advance();
         }
-        // println!("-----------------------------");
-        // for robot in &robots {
-        //     println!("{:?}", robot);
-        // }
-
-        // let mut image: RgbImage = image::ImageBuffer::new(max_x as u32, max_y as u32);
-        // draw_pixel(&robots, &mut image);
-
-        // match image.save(format!("trees/tree_{}.png", iteration)) {
-        //     Ok(_) => {
-        //         println!("Saved Image {}", iteration);
-        //     },
-        //     Err(_) => {
-        //         println!("Failed to Save Image {}", iteration);
-        //         exit(1);
-        //     }
-        // }
-
-        // println!("ITERATION: {}", iteration);
-        // print_map(&robots);
-        // pause();
-    }
-    let mut count_by_position: HashMap<(isize, isize), usize> = HashMap::new();
-    for robot in robots {
-        count_by_position
-            .entry(robot.position)
-            .and_modify(|it| *it += 1)
-            .or_insert(1);
+        let mut count_by_position: HashMap<(isize, isize), usize> = HashMap::new();
+        for robot in &robots {
+            count_by_position
+                .entry(robot.position)
+                .and_modify(|it| *it += 1)
+                .or_insert(1);
+        }
+        let frequency = calculate_frequency(&count_by_position);
+        if highest_frequency.0 < frequency {
+            highest_frequency = (frequency, iteration);
+        }
+        // println!("Iteration :: {} | Frequency :: {}", iteration, frequency);
     }
 
-    let mut q1: u64 = 0;
-    let mut q2: u64 = 0;
-    let mut q3: u64 = 0;
-    let mut q4: u64 = 0;
-    for (k, v) in count_by_position {
-        // println!("\n\n{:?} :: {}", k, v);
-        if k.0 >= 0 && k.0 < (max_x / 2) && k.1 >= 0 && k.1 < (max_y / 2) {
-            q1 += v as u64;
-        }
-        if k.0 > (max_x / 2) && k.0 < max_x && k.1 >= 0 && k.1 < (max_y / 2) {
-            q2 += v as u64;
-        }
-        if k.0 >= 0 && k.0 < (max_x / 2) && k.1 > (max_y / 2) && k.1 < max_y {
-            q3 += v as u64;
-        }
-        if k.0 > (max_x / 2) && k.0 < max_x && k.1 > (max_y / 2) && k.1 < max_y {
-            q4 += v as u64;
-        }
-        // println!("Q1 :: {} | Q2 :: {} | Q3 :: {} | Q4 :: {}", q1, q2, q3, q4);
-    }
-
-    println!("PRODUCT: {}", q1 * q2 * q3 * q4);
+    println!("Highest frequency: {:?}", highest_frequency);
 }
 
 fn parse_values(raw: &str) -> (isize, isize) {
@@ -121,6 +85,30 @@ fn parse_values(raw: &str) -> (isize, isize) {
             ))
         })
         .unwrap()
+}
+
+fn calculate_frequency(robot_count_by_position: &HashMap<(isize, isize), usize>) -> usize {
+    let mut frequency: usize = 0;
+
+    for (pos, count) in robot_count_by_position {
+        if *count > 1 {
+            frequency += count;
+        }
+        if let Some(_) = robot_count_by_position.get(&(pos.0 + 1, pos.1)) {
+            frequency += 1;
+        }
+        if let Some(_) = robot_count_by_position.get(&(pos.0 - 1, pos.1)) {
+            frequency += 1;
+        }
+        if let Some(_) = robot_count_by_position.get(&(pos.0, pos.1 + 1)) {
+            frequency += 1;
+        }
+        if let Some(_) = robot_count_by_position.get(&(pos.0, pos.1 - 1)) {
+            frequency += 1;
+        }
+    }
+
+    frequency
 }
 
 fn print_map(robots: &Vec<Robot>) {
