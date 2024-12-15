@@ -9,6 +9,11 @@
   (libraries str))
 
 (executable
-(public_name d1p2y24)
-(name d1p2y24)
-(libraries str))
+  (public_name d1p2y24)
+  (name d1p2y24)
+  (libraries str))
+
+(executable
+  (public_name d2p1y24)
+  (name d2p1y24)
+  (libraries str))
