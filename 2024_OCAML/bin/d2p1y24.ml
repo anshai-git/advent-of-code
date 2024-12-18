@@ -22,8 +22,28 @@ let print_int_list lst =
   Printf.printf "\n"
 ;;
 
+let is_ascending report =
+  match report with
+  | first :: second :: _ -> first > second
+  | _ -> false
+;;
+
+let verify_ascending report =
+  let rec aux lst =
+    match lst with
+    | [] -> true
+    | [e1 :: e2 :: rest] -> if e1 > e2 then false else aux [e2 :: res]
+    | _ -> false
+;;
+
+let is_safe report =
+  let is_asc = is_ascending report in
+  verify_ascending report
+;;
+
 let () =
-  let lines = read_file_lines "input.txt" in
-  let nums = List.map (fun el -> split_and_extract_numbers el) lines in
-  List.iter (fun el -> print_int_list el) nums
+  let lines = read_file_lines "d2_ex1.txt" in
+  let num_lists = List.map (fun el -> split_and_extract_numbers el) lines in
+
+  (* List.iter (fun el -> print_int_list el) nums *)
 ;;

@@ -23,7 +23,7 @@ let print_int_list lst =
 ;;
 
 let () =
-  let lines = read_file_lines "input.txt" in
+  let lines = read_file_lines "d2_ex1.txt" in
   let nums = List.map (fun el -> split_and_extract_numbers el) lines in
   List.iter (fun el -> print_int_list el) nums
 ;;

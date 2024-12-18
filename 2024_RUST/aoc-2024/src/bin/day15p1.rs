@@ -1,6 +1,6 @@
 use std::{
     fs::File,
-    io::{BufRead, BufReader},
+    io::{BufRead, BufReader}, process::exit,
 };
 
 use aoc_2024::lib::util::{open_file, parse_filename};
@@ -92,7 +92,11 @@ fn main() {
                 '>' => Movement::Right,
                 '<' => Movement::Left,
                 '^' => Movement::Up,
-                _ => Movement::Down,
+                'v' | 'V' => Movement::Down,
+                _ => {
+                    eprintln!("Invalid char");
+                    exit(1);
+                }
             })
         })
         .flatten()

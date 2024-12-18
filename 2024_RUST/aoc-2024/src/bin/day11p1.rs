@@ -1,3 +1,5 @@
+#![feature(if_let_guard)]
+
 use std::{
     fs::File,
     io::{BufRead, BufReader},

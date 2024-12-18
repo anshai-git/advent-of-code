@@ -1,3 +1,5 @@
+#![feature(if_let_guard)]
+
 use std::{
     collections::BTreeMap,
     fs::File,
@@ -34,7 +36,7 @@ fn main() {
                         .or_insert(*count);
                 }
                 _ if let Some(stone_string) = has_even_number_of_digits(stone) => {
-                    let mid = s.chars().count() / 2;
+                    let mid = stone_string.chars().count() / 2;
                     let (first, second) = stone_string.split_at(mid);
                     new_stones
                         .entry(first.parse::<u64>().unwrap())
