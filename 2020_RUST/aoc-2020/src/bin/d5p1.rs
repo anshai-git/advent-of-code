@@ -48,6 +48,4 @@ fn main() {
     }
 
     println!("SEAT ID: {}", max);
-
-
 }
