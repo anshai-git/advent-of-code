@@ -3,6 +3,7 @@ use std::{
     io::{BufRead, BufReader},
 };
 
+extern crate aoc_2025;
 use aoc_2025::lib::utils::{open_file, parse_filename};
 
 #[derive(Debug)]
