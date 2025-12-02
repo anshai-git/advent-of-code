@@ -13,37 +13,23 @@ pub struct Range {
 }
 
 impl Range {
-    pub fn count_invalid(&self) -> u64 {
-        let mut count: u64 = 0;
-        for i in self.start..=self.end {
-            let num_str = i.to_string();
-            if num_str.chars().count() % 2 == 0 {
-                let (left, right) = num_str.split_at(num_str.chars().count() / 2);
-                if left.chars().eq(right.chars()) {
-                    count += 1;
-                }
-            }
-        }
-        count
-    }
-
     pub fn sum_invalid(&self) -> u64 {
         let mut sum: u64 = 0;
 
-        for i in self.start..=self.end {
+        'a: for i in self.start..=self.end {
             let num_str = i.to_string();
-
-            for j in 2..=num_str.chars().count() {
-
+            for j in 1..num_str.chars().count() {
                 if num_str.chars().count() % j == 0 {
-                    f
+                    let chars: Vec<char> = num_str.chars().collect();
+                    let chunks: Vec<&[char]> = chars.chunks(j).collect();
+                    if chunks.iter().all(|c| *c == chunks[0]) {
+                        println!("Chunks: {:?}", chunks);
+                        sum += i;
+                        continue 'a;
+                    }
                 }
 
             }
-
-
-
-
         }
 
         sum
@@ -77,7 +63,7 @@ fn main() {
 
     let mut sum: u64 = 0;
     for range in ranges {
-        println!("Range: {:?} :: {}", range, range.count_invalid());
+        println!("Range: {:?} :: {}", range, range.sum_invalid());
         sum += range.sum_invalid();
     }
 
