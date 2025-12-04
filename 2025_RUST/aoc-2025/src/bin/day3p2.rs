@@ -22,22 +22,29 @@ impl Bank {
             }
 
             batteries.remove(weak.0);
+            println!("Removed from left: {:?} :: {:?}", weak, batteries);
         }
 
-        while let Some(same) = find_low_from_right(&batteries) {
-            if batteries.len() == batteries_count {
-                break;
-            }
+        if batteries.len() > batteries_count {
+            while let Some(same) = find_low_from_right(&batteries) {
+                if batteries.len() == batteries_count {
+                    break;
+                }
 
-            batteries.remove(same.0);
+                batteries.remove(same.0);
+                println!("Removed from right: {:?} :: {:?}", same, batteries);
+            }
         }
 
-        while let Some(same) = find_same(&batteries) {
-            if batteries.len() == batteries_count {
-                break;
-            }
+        if batteries.len() > batteries_count {
+            while let Some(same) = find_same(&batteries) {
+                if batteries.len() == batteries_count {
+                    break;
+                }
 
-            batteries.remove(same.0);
+                batteries.remove(same.0);
+                println!("Removed duplicate: {:?} :: {:?}", same, batteries);
+            }
         }
 
         let mut jolts = 0;
@@ -75,7 +82,7 @@ fn main() {
 
     let mut sum = 0;
     for bank in banks {
-        let jolts = bank.largest_joltage(12);
+        let jolts = bank.largest_joltage(2);
         println!("Bank {:?} :: Joltage {:?}", bank, jolts);
         sum += jolts;
     }

@@ -20,13 +20,11 @@ fn main() {
 
     let mut count: usize = 0;
     while let Some(accessible_positions) = find_accessible(&grid) {
-        println!("Accessible Count: {}", accessible_positions.len());
         count += accessible_positions.len();
         for pos in accessible_positions {
             grid[pos.0][pos.1] = '.';
         }
     }
-    println!("Count: {}", count);
 }
 
 pub fn find_accessible(grid: &Vec<Vec<char>>) -> Option<Vec<(usize, usize)>> {
