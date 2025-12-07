@@ -31,4 +31,35 @@ fn main() {
         }
         val
     };
+
+    grid[start.0][start.1] = '|';
+
+    for row in &grid {
+        println!("{:?}", row);
+    }
+
+    let mut count: usize = 0;
+    for i in 0..grid.len() - 1 {
+        for j in 0..grid[i].len() {
+            if grid[i][j] == '|' {
+                println!("[{}][{}] FOUND |", i, j);
+                if grid[i + 1][j] == '.' {
+                    println!("[{}][{}] setting |", i + 1, j);
+                    grid[i + 1][j] = '|';
+                } else if grid[i + 1][j] == '^' {
+                    count += 1;
+                    grid[i + 1][j - 1] = '|';
+                    grid[i + 1][j + 1] = '|';
+                }
+            }
+        }
+
+        for row in &grid {
+            println!("{:?}", row);
+        }
+        println!("=========================================================================\n");
+    }
+
+    println!("Start: {:?}", start);
+    println!("Count: {:?}", count);
 }
