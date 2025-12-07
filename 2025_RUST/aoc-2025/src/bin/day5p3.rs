@@ -56,39 +56,75 @@ fn main() {
         .map(|l| Range::from(l))
         .collect();
 
+    println!("\n======================\n");
+    for range in &ranges {
+        println!("{:?}", range);
+    }
+    println!("\n======================\n");
+
     ranges.sort_by_key(|r| r.start);
 
+    println!("\n======================\n");
+    for range in &ranges {
+        println!("{:?}", range);
+    }
+    println!("\n======================\n");
+
     for i in 0..ranges.len() {
-        let new_range = align_range(i, &ranges);
-        ranges[i] = new_range;
+        while let Some(range) = align_range(i, &ranges) {
+            println!("[{}] :: {:?}", i, range);
+            ranges[i] = range;
+        }
     }
 
+    for i in 0..ranges.len() {
+        while let Some(range) = align_range(i, &ranges) {
+            println!("[{}] :: {:?}", i, range);
+            ranges[i] = range;
+        }
+    }
+
+    println!("\n======================\n");
+    for range in &ranges {
+        println!("{:?}", range);
+    }
+    println!("\n======================\n");
     let count: usize = ranges.into_iter().map(|r| r.count()).sum();
     println!("Count: {}", count);
 }
 
-fn align_range(range_index: usize, ranges: &Vec<Range>) -> Range {
+fn align_range(range_index: usize, ranges: &Vec<Range>) -> Option<Range> {
     let mut range: Range = Range {
         start: ranges[range_index].start,
         end: ranges[range_index].end,
     };
 
-    for i in range_index..ranges.len() {
+    if range.start == 0 && range.end == 0 {
+        return None;
+    }
+
+    for i in 0..ranges.len() {
         let r = ranges.get(i).unwrap();
 
+        if range_index == i || (r.start == 0 && r.end == 0) {
+            continue;
+        }
+
+        println!("Comparing {:?} with {:?} :: result {}", range, r, range.start >= r.start && range.end <= r.end);
         if range.start >= r.start && range.end <= r.end {
             range.start = 0;
             range.end = 0;
-            break;
+            return Some(range);
         }
 
-        if range.end >= r.start && range.end < r.end {
+        if range.end >= r.start && range.end <= r.end {
             println!("end of {:?} in {:?}", range, r);
             range.end = r.start - 1;
             println!("with new end {:?}", range);
-            break;
+            return Some(range);
         }
     }
 
-    range
+    None
+
 }
