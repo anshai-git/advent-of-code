@@ -45,17 +45,9 @@ fn main() {
         .collect();
 
     let boxes: Vec<BoxPosition> = lines.into_iter().map(|l| BoxPosition::from(l)).collect();
-    // println!("BOXES: ");
-    // println!("{:?}", boxes);
-    // println!("");
     let mut circuits: Vec<Vec<&BoxPosition>> = boxes.iter().map(|b| vec![b]).collect();
-    // println!("CIRCUITS: ");
-    // println!("{:?}", circuits);
-    // println!("");
 
     let mut boxes_by_diff: Vec<(f64, (&BoxPosition, &BoxPosition))> = Vec::new();
-    println!("DIFFS COUNT: {}", boxes_by_diff.len());
-
     for i in 0..boxes.len() {
         for j in i..boxes.len() {
             if i == j {
@@ -71,9 +63,7 @@ fn main() {
 
     boxes_by_diff.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap_or(std::cmp::Ordering::Equal));
 
-    for item in boxes_by_diff.iter().take(1000) {
-        // println!("SEARCHING ITEM: {:?}", item);
-
+    for item in boxes_by_diff.iter() {
         let index_a = circuits
             .iter()
             .position(|it| {
@@ -94,41 +84,17 @@ fn main() {
             continue;
         }
 
-        if circuits[index_a].len() == 1 {
-            let b: &BoxPosition = circuits[index_a].get(0).unwrap();
-            circuits[index_a] = vec![];
-            circuits[index_b].push(b);
-        }
-
-        if circuits[index_b].len() == 1 {
-            let b: &BoxPosition = circuits[index_b].get(0).unwrap();
-            circuits[index_b] = vec![];
+        for i in 0..circuits[index_b].len() {
+            let b: &BoxPosition = circuits[index_b].get(i).unwrap();
             circuits[index_a].push(b);
         }
+        circuits[index_b] = vec![];
 
-        if circuits[index_a].len() > 1 && circuits[index_b].len() > 1 {
-            for i in 0..circuits[index_b].len() {
-                let b: &BoxPosition = circuits[index_b].get(i).unwrap();
-                circuits[index_a].push(b);
-            }
-            circuits[index_b] = vec![];
-        }
-
-        // println!("CIRCUITS: ");
-        // println!("{:?}", circuits);
-        // println!("");
-        //
-        // println!("{} :: {}", index_a, index_b);
+        println!(
+            "MULTI LEN COUNT: {} :: {:?} :: {}",
+            circuits.iter().filter(|it| it.len() > 0).count(),
+            item,
+            (item.1 .0.x) * (item.1 .1.x)
+        );
     }
-
-    circuits.sort_by_key(|c| c.len());
-
-    let mut prod: usize = 1;
-    for c in circuits.iter().rev().take(3) {
-        println!("c: {}", c.len());
-        prod *= c.len()
-    }
-
-
-    println!("Result: {}", prod);
 }
